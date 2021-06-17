@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct Home: View {
+    
+    @State var offset: CGFloat = 0
+    
+    var topEdge: CGFloat
+    
     var body: some View {
         
         ZStack {
@@ -72,13 +77,44 @@ struct Home: View {
                             //content...
                             ScrollView(.horizontal, showsIndicators: false) {
                                 
-                                
+                                HStack(spacing: 15) {
+                                    
+                                    ForecastView(time:"12 AM", celcius: 97, image: "sun.min")
+                                    
+                                    ForecastView(time:"1 PM", celcius: 97, image: "sun.haze")
+                                    
+                                    ForecastView(time:"2 PM", celcius: 97, image: "sun.min")
+                                    
+                                    ForecastView(time:"3 PM", celcius: 97, image: "cloud.sun")
+                                    
+                                    ForecastView(time:"4 PM", celcius: 97, image: "sun.haze")
+                                    
+                                    ForecastView(time:"5 PM", celcius: 97, image: "sun.haze")
+                                    
+                                    ForecastView(time:"6 PM", celcius: 97, image: "sun.haze")
+                                }
                             }
                         }
                     }
                 }
                 .padding(.top, 25)
+                .padding(.top, topEdge)
                 .padding([.horizontal, .bottom])
+                //getting offset
+                .overlay(
+                
+                    GeometryReader { proxy -> Color in
+                    
+                        let minY = proxy.frame(in: .global).minY
+                    
+                        DispatchQueue.main.async {
+                            self.offset = minY
+                        }
+                        
+                        return Color.clear
+                    }
+                )
+                
             }
         }
     }
@@ -86,6 +122,36 @@ struct Home: View {
 
 struct Home_Previews: PreviewProvider {
     static var previews: some View {
-        Home()
+        ContentView()
+    }
+}
+
+struct ForecastView: View {
+    
+    var time: String
+    var celcius: CGFloat
+    var image: String
+    
+    var body: some View {
+        VStack(spacing: 15) {
+            
+            
+            Text(time)
+                .font(.callout.bold())
+                .foregroundStyle(.white)
+            
+            Image(systemName: image)
+                .font(.title2)
+            // multicolor
+                .symbolVariant(.fill)
+                .symbolRenderingMode(.palette)
+                .foregroundStyle(.yellow, .white)
+                .frame(height: 30)
+            
+            Text("\(Int(celcius))°")
+                .font(.callout.bold())
+                .foregroundStyle(.white)
+        }
+        .padding(.horizontal, 10)
     }
 }

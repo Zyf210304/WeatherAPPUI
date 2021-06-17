@@ -10,7 +10,18 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         
-        Home()
+        //since window is decrepted in ios 15...
+        //getting safe area using geometry reader
+        
+        GeometryReader { proxy in
+            
+            let topEdge = proxy.safeAreaInsets.top
+            Home(topEdge: topEdge)
+                .ignoresSafeArea(.all, edges: .top)
+            
+        }
+        
+       
     }
 }
 
