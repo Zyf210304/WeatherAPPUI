@@ -44,17 +44,24 @@ struct Home: View {
                             .font(.system(size: 45))
                             .foregroundColor(.white)
                             .shadow(radius: 5)
+                            .opacity(getTitleOpactiy())
                         
                         Text("Cloudy")
                             .foregroundStyle(.secondary)
                             .foregroundColor(.white)
                             .shadow(radius: 5)
+                            .opacity(getTitleOpactiy())
                         
                         Text("H:113° L:105°")
                             .foregroundStyle(.primary)
                             .foregroundColor(.white)
                             .shadow(radius: 5)
+                            .opacity(getTitleOpactiy())
                     }
+                    .offset(y: -offset)
+                    //For bottom drag effect...
+                    .offset(y: offset > 0 ? (offset / UIScreen.main.bounds.width) * 100 : 0)
+                    .offset(y: getTitleOffset())
                     
                     //custome data view...
                     VStack(spacing: 8) {
@@ -95,6 +102,9 @@ struct Home: View {
                                 }
                             }
                         }
+                        
+                        WeatherDataView()
+                        
                     }
                 }
                 .padding(.top, 25)
@@ -117,6 +127,33 @@ struct Home: View {
                 
             }
         }
+    }
+    
+    func getTitleOpactiy() -> CGFloat {
+        
+        let titleOffset = -getTitleOffset()
+        
+        let progress = titleOffset / 20
+        
+        let opacity = 1 - progress
+        
+        return opacity
+    }
+
+    func  getTitleOffset() -> CGFloat {
+        
+        //setting one max height for whole title...
+        //consider max as 120...
+        
+        if offset < 0 {
+            let progress = -offset / 120
+            
+            let newOffset = (progress <= 1.0 ? progress : 1) * 20
+            
+            return -newOffset
+        }
+       
+        return 0
     }
 }
 
