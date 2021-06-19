@@ -6,12 +6,17 @@
 //
 
 import SwiftUI
+import SpriteKit
 
 struct Home: View {
     
     @State var offset: CGFloat = 0
     
     var topEdge: CGFloat
+    
+    // to avoid early starting of landing animation
+    @State var showRain = true
+    //were goingt to delay start it
     
     var body: some View {
         
@@ -26,6 +31,15 @@ struct Home: View {
             }
             .ignoresSafeArea()
             .overlay(.ultraThinMaterial)
+            
+            //Rain fall view
+            GeometryReader{ _ in
+                
+                SpriteView(scene: RainFall(), options: [.allowsTransparency])
+            }
+            .ignoresSafeArea()
+            .opacity(showRain ? 1 : 0)
+            
             
             // mianview ..
             ScrollView(.vertical, showsIndicators: false) {
@@ -106,6 +120,17 @@ struct Home: View {
                         WeatherDataView()
                         
                     }
+                    .background {
+                        
+                        GeometryReader{ _ in
+                            
+                            SpriteView(scene: RainFallLanding(), options: [.allowsTransparency])
+                                .offset(y: -10)
+                        }
+                        .offset(y: -(offset + topEdge) > 60 ? -(offset + (60 + topEdge)) : 0)
+                        .opacity(showRain ? 1 : 0)
+                        
+                    }
                 }
                 .padding(.top, 25)
                 .padding(.top, topEdge)
@@ -119,6 +144,7 @@ struct Home: View {
                     
                         DispatchQueue.main.async {
                             self.offset = minY
+                            print("++++++++++++++\(minY + topEdge)")
                         }
                         
                         return Color.clear
@@ -190,5 +216,57 @@ struct ForecastView: View {
                 .foregroundStyle(.white)
         }
         .padding(.horizontal, 10)
+    }
+}
+
+// going to create Rain/Snow effect Like ios 15 weather app....
+// sprite kit rain scene
+
+class RainFall: SKScene {
+    
+    override func sceneDidLoad() {
+        
+        size = UIScreen.main.bounds.size
+        scaleMode = .resizeFill
+        
+        //anchor point
+        anchorPoint = CGPoint(x: 0.5, y: 1)
+        
+        //bg color
+        backgroundColor = .clear
+        
+        // creating node and adding to scene...
+        let node = SKEmitterNode(fileNamed: "RainFall.sks")!
+        addChild(node)
+        
+        //full Width
+        node.particlePositionRange.dx = UIScreen.main.bounds.width
+    }
+}
+
+// next rain fall landing scene...
+class RainFallLanding: SKScene {
+    
+    override func sceneDidLoad() {
+        
+        size = UIScreen.main.bounds.size
+        scaleMode = .resizeFill
+        
+        let height = UIScreen.main.bounds.height
+        //geting percentage by eminiationg postion range...
+        //anchor point
+        anchorPoint = CGPoint(x: 0.5, y: (height - 5) / height)
+        
+        
+        
+        //bg color
+        backgroundColor = .clear
+        
+        // creating node and adding to scene...
+        let node = SKEmitterNode(fileNamed: "RainFallLanding.sks")!
+        addChild(node)
+        
+        //Romoved for card padding
+        node.particlePositionRange.dx = UIScreen.main.bounds.width - 30
     }
 }
